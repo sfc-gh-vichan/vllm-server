@@ -1,5 +1,5 @@
 from typing import List
-from FastAPI import Request
+from fastapi import Request
 
 
 class InferenceRequest(Request):
