@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, Response, StreamingResponse
-from HTTP import HTTPStatus
+from http import HTTPStatus
 
 from engine import vLLMEngine
 from schema import InferenceRequest
