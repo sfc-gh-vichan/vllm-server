@@ -36,15 +36,15 @@ class vLLMEngine:
         request_id = random_uuid()
 
         # Replace this with token ids with arg prompt_token_ids=prompt_token_ids after tokenization
-        results_generator = self.engine.generate(
-            prompt=prompt,
-            sampling_params=sampling_params,
-            request_id=request_id,
-            prompt_token_ids=None,
-        )
 
         # Streaming
         if stream:
+            results_generator = self.engine.generate(
+                prompt=prompt[0],
+                sampling_params=sampling_params,
+                request_id=request_id,
+                prompt_token_ids=None,
+            )
             async def stream_results() -> AsyncGenerator[bytes, None]:
                 async for request_output in results_generator:
                     prompt = request_output.prompt
@@ -57,6 +57,12 @@ class vLLMEngine:
             return stream_results()
 
         # Non-streaming
+        results_generator = self.engine.generate(
+            prompt=prompt[0],
+            sampling_params=sampling_params,
+            request_id=request_id,
+            prompt_token_ids=None,
+        )
         final_output = None
         async for request_output in results_generator:
             if await req.is_disconnected():
