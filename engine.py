@@ -70,7 +70,7 @@ class vLLMEngine:
 
         # Non-streaming
         results_generator = self.engine.generate(
-            prompt=prompt,
+            prompt=prompt[0],
             sampling_params=sampling_params,
             request_id=request_id,
             prompt_token_ids=None,
