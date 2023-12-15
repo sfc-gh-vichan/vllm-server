@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from http import HTTPStatus
 
 from engine import vLLMEngine
@@ -10,8 +10,13 @@ engine = vLLMEngine()
 app = FastAPI()
 
 
+@app.get("/model")
+async def _model() -> Response:
+    return engine.list_model()
+
+
 @app.get("/health")
-async def health() -> Response:
+async def _health() -> Response:
     return Response(status_code=HTTPStatus.OK)
 
 

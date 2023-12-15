@@ -1,9 +1,15 @@
 import argparse
+from dataclasses import dataclass
 from http import HTTPStatus
+import json
+import os
+from pathlib import Path
 import time
 from typing import AsyncGenerator, Dict, List
+from dacite import from_dict
 from fastapi.responses import JSONResponse, StreamingResponse
 
+from args import args
 from fastapi import HTTPException
 from schema import InferenceRequest
 from sse import EventType, event
@@ -14,18 +20,53 @@ from vllm.sampling_params import SamplingParams
 from vllm.utils import random_uuid
 
 
+@dataclass
+class DeploymentConfig:
+    model_name: str
+    tensor_parallel: int
+    max_model_len: int
+    truncate: bool
+
+
 class vLLMEngine:
     def __init__(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--host", type=str, default="0.0.0.0")
-        parser.add_argument("--port", type=int, default=1234)
+        parser.add_argument("--port", type=int, default=8000)
         parser = AsyncEngineArgs.add_cli_args(parser)
         args, _ = parser.parse_known_args()
         engine_args = AsyncEngineArgs.from_cli_args(args)
+        engine_args.tensor_parallel_size = self.tensor_parallel
+        engine_args.max_model_len = self.max_model_len
         start = time.time()
         self.async_engine = AsyncLLMEngine.from_engine_args(engine_args)
         self.engine = self.async_engine.engine
         print("took" + " {:.2f}".format(time.time()-start) + " seconds to start vllm engine for model" + f" {args.model}")
+
+
+    def _load_deployment_config(self):
+        path = args.model_repository
+        p = Path(path)
+        model_name = ""
+        for f in p.iterdir():
+            if f.is_dir():
+                model_name = f.name
+                break
+        if len(model_name) == 0:
+            # model does not exist
+            pass
+        deployment_config_file_path = os.path.join(path, model_name, "deployment_config.json")
+        f = open(deployment_config_file_path)
+        config = json.load(f)
+        deployment_config = from_dict(data_class=DeploymentConfig, data=config)
+        self.model_name = deployment_config.model_name
+        self.tensor_parallel = deployment_config.tensor_parallel
+        self.max_model_len = deployment_config.max_model_len
+        self.truncate = deployment_config.truncate
+
+
+    def list_models(self):
+        return JSONResponse({"model": self.model_name})
 
 
     async def generate(
