@@ -74,8 +74,8 @@ class vLLMEngine:
 
         while prompt or self.engine.has_unfinished_requests():
             if prompt:
-                prompt = prompt.pop(0)
-                self.engine.add_request(str(request_id), prompt, sampling_params)
+                prompt_text = prompt.pop(0)
+                self.engine.add_request(str(request_id), prompt_text, sampling_params)
                 request_id += 1
 
             request_outputs = self.engine.step()
