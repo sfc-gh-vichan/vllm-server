@@ -1,6 +1,5 @@
 import argparse
 from http import HTTPStatus
-import json
 import time
 from typing import AsyncGenerator, Dict, List
 from fastapi.responses import JSONResponse, StreamingResponse
