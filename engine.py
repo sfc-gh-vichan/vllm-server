@@ -35,7 +35,7 @@ class vLLMEngine:
         sampling_params = SamplingParams(**req_dict)
         request_id = random_uuid()
 
-        if isinstance(prompt, List[str]) and len(prompt) != 1 and stream:
+        if isinstance(prompt, List) and len(prompt) != 1 and stream:
             raise HTTPException(
                 status_code=HTTPStatus.BAD_REQUEST,
                 detail="requires exactly one prompt for streaming",
