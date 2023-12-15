@@ -34,6 +34,7 @@ class vLLMEngine:
         parser.add_argument("--host", type=str, default="0.0.0.0")
         parser.add_argument("--port", type=int, default=8000)
         parser.add_argument("--model", type=str, default=self.model_path)
+        parser.add_argument('--tensor-parallel-size', '-tp', type=int, default=self.tensor_parallel)
         parser = AsyncEngineArgs.add_cli_args(parser)
         args, _ = parser.parse_known_args()
         engine_args = AsyncEngineArgs.from_cli_args(args)
