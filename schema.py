@@ -1,6 +1,7 @@
 from fastapi import Request
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
 
 
 class InferenceRequest(Request):
@@ -10,3 +11,6 @@ class InferenceRequest(Request):
     temperature: float = 0.0
     top_p: float = 1.0
     top_k: int = -1
+
+class InferenceResponse(BaseModel):
+    text: List[str]
