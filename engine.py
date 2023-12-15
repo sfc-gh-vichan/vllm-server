@@ -3,6 +3,7 @@ from http import HTTPStatus
 import json
 import time
 from typing import Any, AsyncGenerator, Dict, List
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from fastapi import HTTPException
 from schema import InferenceRequest
@@ -67,7 +68,7 @@ class vLLMEngine:
                     }
                     yield (json.dumps(ret) + "\n")
 
-            return stream_results()
+            return StreamingResponse(stream_results())
 
         # Non-streaming
         request_id = 0
@@ -84,4 +85,4 @@ class vLLMEngine:
             for request_output in request_outputs:
                 if request_output.finished:
                     outputs.append(request_output.outputs[0].text)
-        return {"text": outputs}
+        return JSONResponse({"text": outputs})
