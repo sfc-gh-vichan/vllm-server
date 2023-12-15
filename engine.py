@@ -35,7 +35,11 @@ class vLLMEngine:
         sampling_params = SamplingParams(**req_dict)
         request_id = random_uuid()
 
-        # Replace this with token ids with arg prompt_token_ids=prompt_token_ids after tokenization
+        if len(prompt) != 1 and stream:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                details="requires exactly one prompt for streaming",
+            )
 
         # Streaming
         if stream:
@@ -52,7 +56,11 @@ class vLLMEngine:
                     for output in request_output.outputs:
                         text_outputs.append(output.text[len(full_output):])
                         full_output += output.text[len(full_output):]
-                    ret = {"text": text_outputs}
+                    ret = {
+                        "id": request_id,
+                        "created": time.time(),
+                        "text": text_outputs
+                    }
                     yield (json.dumps(ret) + "\0\n")
 
             return stream_results()
