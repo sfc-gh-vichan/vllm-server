@@ -50,8 +50,8 @@ class vLLMEngine:
                 async for request_output in results_generator:
                     text_outputs = []
                     for output in request_output.outputs:
+                        text_outputs.append(output.text[len(full_output):])
                         full_output += output.text
-                        text_outputs.append(output.text)
                     ret = {"text": text_outputs}
                     yield (json.dumps(ret) + "\0\n")
 
