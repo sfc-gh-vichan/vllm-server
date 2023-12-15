@@ -21,7 +21,8 @@ class vLLMEngine:
         args, _ = parser.parse_known_args()
         engine_args = AsyncEngineArgs.from_cli_args(args)
         start = time.time()
-        self.engine = AsyncLLMEngine.from_engine_args(engine_args)
+        self.async_engine = AsyncLLMEngine.from_engine_args(engine_args)
+        self.engine = self.async_engine.engine
         print("took" + " {:.2f}".format(time.time()-start) + " seconds to start vllm engine for model" + f" {args.model}")
 
 
@@ -43,7 +44,7 @@ class vLLMEngine:
 
         # Streaming
         if stream:
-            results_generator = self.engine.generate(
+            results_generator = self.async_engine.generate(
                 prompt=prompt[0],
                 sampling_params=sampling_params,
                 request_id=request_id,
@@ -69,23 +70,17 @@ class vLLMEngine:
             return stream_results()
 
         # Non-streaming
-        results_generator = self.engine.generate(
-            prompt=prompt,
-            sampling_params=sampling_params,
-            request_id=request_id,
-            prompt_token_ids=None,
-        )
-        final_output = None
-        async for request_output in results_generator:
-            if await req.is_disconnected():
-                # Abort the request if the client disconnects.
-                await self.engine.abort(request_id)
-                raise HTTPException(
-                    status_code=499,
-                    detail="client closed connection",
-                )
-            final_output = request_output
+        request_id = 0
 
-        prompt = final_output.prompt
-        text_outputs = [prompt + output.text for output in final_output.outputs]
-        return {"text": text_outputs}
+        while prompt or self.engine.has_unfinished_requests():
+            if prompt:
+                prompt, sampling_params = prompt.pop(0)
+                self.engine.add_request(str(request_id), prompt, sampling_params)
+                request_id += 1
+
+            request_outputs = self.engine.step()
+
+            for request_output in request_outputs:
+                if request_output.finished:
+                    print(request_output)
+        return {"text": "text_outputs"}
