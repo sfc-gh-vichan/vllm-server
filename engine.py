@@ -64,7 +64,7 @@ class vLLMEngine:
                         "text": text_outputs,
                         "finish_reason": finish_reason,
                     }
-                    yield (json.dumps(ret) + "\0\n")
+                    yield (json.dumps(ret) + "\n")
 
             return stream_results()
 
