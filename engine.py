@@ -72,6 +72,7 @@ class vLLMEngine:
         # Non-streaming
         request_id = 0
 
+        outputs = []
         while prompt or self.engine.has_unfinished_requests():
             if prompt:
                 prompt_text = prompt.pop(0)
@@ -82,5 +83,5 @@ class vLLMEngine:
 
             for request_output in request_outputs:
                 if request_output.finished:
-                    print(request_output)
-        return {"text": "text_outputs"}
+                    outputs.append(request_output.outputs.text)
+        return {"text": outputs}
