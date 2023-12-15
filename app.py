@@ -20,4 +20,4 @@ async def _generate(req: InferenceRequest) -> Response:
     resp = await engine.generate(req)
     if req.stream:
         return StreamingResponse(resp)
-    return JSONResponse(resp)
+    return resp
