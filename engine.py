@@ -24,7 +24,6 @@ from vllm.utils import random_uuid
 class DeploymentConfig:
     model_name: str
     tensor_parallel: int
-    max_model_len: int
     truncate: bool
 
 
@@ -38,7 +37,6 @@ class vLLMEngine:
         args, _ = parser.parse_known_args()
         engine_args = AsyncEngineArgs.from_cli_args(args)
         engine_args.tensor_parallel_size = self.tensor_parallel
-        engine_args.max_model_len = self.max_model_len
         start = time.time()
         self.async_engine = AsyncLLMEngine.from_engine_args(engine_args)
         self.engine = self.async_engine.engine
@@ -61,7 +59,6 @@ class vLLMEngine:
         deployment_config = from_dict(data_class=DeploymentConfig, data=config)
         self.model_name = deployment_config.model_name
         self.tensor_parallel = deployment_config.tensor_parallel
-        self.max_model_len = deployment_config.max_model_len
         self.truncate = deployment_config.truncate
 
 
