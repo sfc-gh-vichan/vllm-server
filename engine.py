@@ -52,7 +52,7 @@ class vLLMEngine:
                         prompt + output.text for output in request_output.outputs
                     ]
                     ret = {"text": text_outputs}
-                    yield (json.dumps(ret) + "\0").encode("utf-8")
+                    yield (json.dumps(ret) + "\0")
 
             return stream_results()
 
