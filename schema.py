@@ -1,8 +1,8 @@
-from fastapi import Request
+from pydantic import BaseModel
 from typing import List
 
 
-class InferenceRequest(Request):
+class InferenceRequest(BaseModel):
     prompts: List[str]
     stream: bool = False
     max_tokens: int = 128

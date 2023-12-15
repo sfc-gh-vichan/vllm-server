@@ -32,7 +32,7 @@ class vLLMEngine:
         self,
         req: InferenceRequest,
     ) -> AsyncGenerator[bytes, None] | Dict[str, List[str]]:
-        req_dict = await req.json()
+        req_dict = req.model_dump()
         prompts = req_dict.pop("prompts")
         stream = req_dict.pop("stream", False)
         sampling_params = SamplingParams(**req_dict)
