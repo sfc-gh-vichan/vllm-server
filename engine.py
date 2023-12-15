@@ -85,4 +85,4 @@ class vLLMEngine:
                 if request_output.finished:
                     outputs.append(request_output.outputs[0].text)
         print(outputs)
-        return {"text": outputs}
+        return {"text": ""}
