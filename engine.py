@@ -47,15 +47,14 @@ class vLLMEngine:
     def _load_deployment_config(self):
         path = args.model_repository
         p = Path(path)
-        model_name = ""
+        model_path = ""
         for f in p.iterdir():
             if f.is_dir():
-                model_name = f.name
+                model_path = f.name
                 break
-        if len(model_name) == 0:
-            # model does not exist
-            pass
-        deployment_config_file_path = os.path.join(path, model_name, "deployment_config.json")
+        if len(model_path) == 0:
+            raise ValueError()
+        deployment_config_file_path = os.path.join(path, model_path, "deployment_config.json")
         f = open(deployment_config_file_path)
         config = json.load(f)
         deployment_config = from_dict(data_class=DeploymentConfig, data=config)
@@ -73,7 +72,7 @@ class vLLMEngine:
         self,
         req: InferenceRequest,
     ) -> AsyncGenerator[bytes, None] | Dict[str, List[str]]:
-        req_dict = req.json()
+        req_dict = req.dict()
         prompts = req_dict.pop("prompts")
         stream = req_dict.pop("stream", False)
         sampling_params = SamplingParams(**req_dict)
