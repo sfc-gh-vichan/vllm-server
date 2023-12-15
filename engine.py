@@ -2,8 +2,8 @@ import argparse
 from http import HTTPStatus
 import json
 import time
-from typing import Any, AsyncGenerator, Dict, List
-from fastapi.responses import JSONResponse, Response, StreamingResponse
+from typing import AsyncGenerator, Dict, List
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from fastapi import HTTPException
 from schema import InferenceRequest
@@ -85,4 +85,4 @@ class vLLMEngine:
                 if request_output.finished:
                     outputs.append(request_output.outputs[0].text)
 
-        return JSONResponse({"output_texts": outputs})
+        return JSONResponse({"texts": outputs})
