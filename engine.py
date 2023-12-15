@@ -53,13 +53,16 @@ class vLLMEngine:
                 full_output = ""
                 async for request_output in results_generator:
                     text_outputs = []
+                    finish_reason = ""
                     for output in request_output.outputs:
                         text_outputs.append(output.text[len(full_output):])
                         full_output += output.text[len(full_output):]
+                        finish_reason = output.finish_reason
                     ret = {
                         "id": request_id,
                         "created": int(time.time()),
-                        "text": text_outputs
+                        "text": text_outputs,
+                        "finish_reason": finish_reason,
                     }
                     yield (json.dumps(ret) + "\0\n")
 
