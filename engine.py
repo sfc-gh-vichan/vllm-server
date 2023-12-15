@@ -66,7 +66,10 @@ class vLLMEngine:
                         "text": text_outputs,
                         "finish_reason": finish_reason,
                     }
-                    yield (json.dumps(ret) + "\n")
+                    yield "event: message\n"
+                    yield "data: " + json.dumps(ret) + "\n\n"
+                yield "event: done\n"
+                yield "data: \n\n"
 
             return StreamingResponse(stream_results())
 
@@ -82,4 +85,4 @@ class vLLMEngine:
                 if request_output.finished:
                     outputs.append(request_output.outputs[0].text)
 
-        return JSONResponse({"text": outputs})
+        return JSONResponse({"output_texts": outputs})
