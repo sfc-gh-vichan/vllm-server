@@ -1,3 +1,4 @@
+import logging
 import uvicorn
 
 from app import app  # noqa
@@ -8,5 +9,5 @@ if __name__ == "__main__":
         "__main__:app",
         host="0.0.0.0",
         port=args.port,
-        log_config=None,
+        log_level=logging.INFO,
     )
