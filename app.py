@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse, Response, StreamingResponse
 from http import HTTPStatus
 
 from engine import vLLMEngine
-from schema import InferenceRequest
+from schema import InferenceRequest, InferenceResponse
 
 
 engine = vLLMEngine()
