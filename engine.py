@@ -33,6 +33,7 @@ class vLLMEngine:
         parser = argparse.ArgumentParser()
         parser.add_argument("--host", type=str, default="0.0.0.0")
         parser.add_argument("--port", type=int, default=8000)
+        parser.add_argument("--model", type=str, default=self.model_path)
         parser = AsyncEngineArgs.add_cli_args(parser)
         args, _ = parser.parse_known_args()
         engine_args = AsyncEngineArgs.from_cli_args(args)
@@ -46,17 +47,18 @@ class vLLMEngine:
     def _load_deployment_config(self):
         path = args.model_repository
         p = Path(path)
-        model_path = ""
+        model_dir = ""
         for f in p.iterdir():
             if f.is_dir():
-                model_path = f.name
+                model_dir = f.name
                 break
-        if len(model_path) == 0:
+        if len(model_dir) == 0:
             raise ValueError()
-        deployment_config_file_path = os.path.join(path, model_path, "deployment_config.json")
+        deployment_config_file_path = os.path.join(path, model_dir, "deployment_config.json")
         f = open(deployment_config_file_path)
         config = json.load(f)
         deployment_config = from_dict(data_class=DeploymentConfig, data=config)
+        self.model_path = os.path.join(path, model_dir)
         self.model_name = deployment_config.model_name
         self.tensor_parallel = deployment_config.tensor_parallel
         self.truncate = deployment_config.truncate
