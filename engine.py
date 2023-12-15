@@ -58,7 +58,7 @@ class vLLMEngine:
                         full_output += output.text[len(full_output):]
                     ret = {
                         "id": request_id,
-                        "created": time.time(),
+                        "created": int(time.time()),
                         "text": text_outputs
                     }
                     yield (json.dumps(ret) + "\0\n")
