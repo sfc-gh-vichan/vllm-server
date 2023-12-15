@@ -46,11 +46,12 @@ class vLLMEngine:
                 prompt_token_ids=None,
             )
             async def stream_results() -> AsyncGenerator[bytes, None]:
+                full_output = ""
                 async for request_output in results_generator:
-                    prompt = request_output.prompt
-                    text_outputs = [
-                        prompt + output.text for output in request_output.outputs
-                    ]
+                    text_outputs = []
+                    for output in request_output.outputs:
+                        full_output += output.text
+                        text_outputs.append(output.text)
                     ret = {"text": text_outputs}
                     yield (json.dumps(ret) + "\0\n")
 
