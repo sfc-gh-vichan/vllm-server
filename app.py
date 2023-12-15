@@ -18,6 +18,7 @@ async def health() -> Response:
 @app.post("/v1/generate")
 async def _generate(req: InferenceRequest) -> InferenceResponse:
     resp = await engine.generate(req)
+    print(resp)
     if req.stream:
         return StreamingResponse(resp)
     return InferenceResponse(text=resp)
