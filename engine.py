@@ -32,12 +32,11 @@ class vLLMEngine:
         req: InferenceRequest,
     ) -> AsyncGenerator[bytes, None] | Dict[str, List[str]]:
         req_dict = await req.json()
-        prompt = req_dict.pop("prompt")
+        prompts = req_dict.pop("prompts")
         stream = req_dict.pop("stream", False)
         sampling_params = SamplingParams(**req_dict)
-        request_id = random_uuid()
 
-        if isinstance(prompt, List) and len(prompt) != 1 and stream:
+        if len(prompt) != 1 and stream:
             raise HTTPException(
                 status_code=HTTPStatus.BAD_REQUEST,
                 detail="requires exactly one prompt for streaming",
@@ -45,8 +44,9 @@ class vLLMEngine:
 
         # Streaming
         if stream:
+            request_id = random_uuid()
             results_generator = self.async_engine.generate(
-                prompt=prompt[0],
+                prompt=prompts[0],
                 sampling_params=sampling_params,
                 request_id=request_id,
                 prompt_token_ids=None,
@@ -71,18 +71,15 @@ class vLLMEngine:
             return StreamingResponse(stream_results())
 
         # Non-streaming
-        request_id = 0
-
         outputs = []
-        while prompt or self.engine.has_unfinished_requests():
-            if prompt:
-                prompt_text = prompt.pop(0)
-                self.engine.add_request(str(request_id), prompt_text, sampling_params)
-                request_id += 1
-
+        for prompt in prompts:
+            request_id = random_uuid()
+            self.engine.add_request(str(request_id), prompt, sampling_params)
+        
+        while self.engine.has_unfinished_requests():
             request_outputs = self.engine.step()
-
             for request_output in request_outputs:
                 if request_output.finished:
                     outputs.append(request_output.outputs[0].text)
+
         return JSONResponse({"text": outputs})

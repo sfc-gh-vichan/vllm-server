@@ -3,7 +3,7 @@ from typing import List
 
 
 class InferenceRequest(Request):
-    prompt: List[str] | str
+    prompts: List[str]
     stream: bool = False
     max_tokens: int = 128
     temperature: float = 0.0
