@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse, Response, StreamingResponse
 from http import HTTPStatus
 
 from engine import vLLMEngine
-from schema import InferenceRequest, InferenceResponse
+from schema import InferenceRequest
 
 
 engine = vLLMEngine()
@@ -16,8 +16,8 @@ async def health() -> Response:
 
 
 @app.post("/v1/generate")
-async def _generate(req: InferenceRequest) -> InferenceResponse:
+async def _generate(req: InferenceRequest) -> Response:
     resp = await engine.generate(req)
     if req.stream:
         return StreamingResponse(resp)
-    return InferenceResponse(text=resp)
+    return JSONResponse(content=resp)

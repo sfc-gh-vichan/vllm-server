@@ -29,7 +29,7 @@ class vLLMEngine:
     async def generate(
         self,
         req: InferenceRequest,
-    ) -> AsyncGenerator[bytes, None] | List[str]:
+    ) -> AsyncGenerator[bytes, None] | Dict[str, List[str]]:
         req_dict = await req.json()
         prompt = req_dict.pop("prompt")
         stream = req_dict.pop("stream", False)
@@ -84,4 +84,4 @@ class vLLMEngine:
             for request_output in request_outputs:
                 if request_output.finished:
                     outputs.append(request_output.outputs[0].text)
-        return outputs
+        return {"text": outputs}
