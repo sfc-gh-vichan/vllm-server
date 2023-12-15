@@ -7,11 +7,13 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from fastapi import HTTPException
 from schema import InferenceRequest
+from sse import EventType, event
 
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.sampling_params import SamplingParams
 from vllm.utils import random_uuid
+
 
 class vLLMEngine:
     def __init__(self):
@@ -60,16 +62,14 @@ class vLLMEngine:
                         text_outputs.append(output.text[len(full_output):])
                         full_output += output.text[len(full_output):]
                         finish_reason = output.finish_reason
-                    ret = {
+                    message = {
                         "id": request_id,
                         "created": int(time.time()),
                         "text": text_outputs,
                         "finish_reason": finish_reason,
                     }
-                    yield "event: message\n"
-                    yield "data: " + json.dumps(ret) + "\n\n"
-                yield "event: done\n"
-                yield "data: \n\n"
+                    yield event(event_type=EventType.MESSAGE, message=message)
+                yield event(event_type=EventType.DONE, message="")
 
             return StreamingResponse(stream_results())
 
