@@ -29,7 +29,7 @@ class vLLMEngine:
     async def generate(
         self,
         req: InferenceRequest,
-    ) -> AsyncGenerator[bytes, None] | Dict[str, List[str]]:
+    ) -> AsyncGenerator[bytes, None] | List[str]:
         req_dict = await req.json()
         prompt = req_dict.pop("prompt")
         stream = req_dict.pop("stream", False)
