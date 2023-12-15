@@ -38,7 +38,7 @@ class vLLMEngine:
         if len(prompt) != 1 and stream:
             raise HTTPException(
                 status_code=HTTPStatus.BAD_REQUEST,
-                details="requires exactly one prompt for streaming",
+                detail="requires exactly one prompt for streaming",
             )
 
         # Streaming
@@ -79,7 +79,7 @@ class vLLMEngine:
                 await self.engine.abort(request_id)
                 raise HTTPException(
                     status_code=499,
-                    details="client closed connection",
+                    detail="client closed connection",
                 )
             final_output = request_output
 
