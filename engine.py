@@ -42,7 +42,7 @@ class vLLMEngine:
         start = time.time()
         self.async_engine = AsyncLLMEngine.from_engine_args(engine_args)
         self.engine = self.async_engine.engine
-        print("took" + " {:.2f}".format(time.time()-start) + " seconds to start vllm engine for model" + f" {args.model}")
+        print("took" + " {:.2f}".format(time.time()-start) + " seconds to start vllm engine for model" + f" {self.model_name}")
 
 
     def _load_deployment_config(self):
