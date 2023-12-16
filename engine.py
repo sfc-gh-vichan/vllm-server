@@ -65,7 +65,7 @@ class vLLMEngine:
         self.truncate = deployment_config.truncate
 
 
-    def list_models(self):
+    def list_model(self):
         return JSONResponse({"model": self.model_name})
 
 
